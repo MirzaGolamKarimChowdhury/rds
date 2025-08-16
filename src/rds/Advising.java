@@ -26,39 +26,26 @@ public class Advising {
         return new ArrayList<>(uniqueCourses.values());
     }
 
-    public boolean preAdviseCourses(List<String> selectedCourseCodes) {
+    public boolean addPreAdvisedCourses(List<String> selectedCourseCodes) {
         List<String> preAdvisedCourseCodes = studentPreAdvisedCourseCodes.getOrDefault(student.getId(), new ArrayList<>());
-        if (!preAdvisedCourseCodes.isEmpty()) {
-            int response = JOptionPane.showConfirmDialog(null, "You have already completed pre-advising. Clear previous selections?", "Confirm", JOptionPane.YES_NO_OPTION);
-            if (response != JOptionPane.YES_OPTION) {
-                return false;
-            }
-            preAdvisedCourseCodes.clear();
-            studentAdvisedCourses.put(student.getId(), new ArrayList<>());
-        }
-
-        int totalCredits = 0;
+        int totalCredits = calculateCurrentPreAdvisedCredits() + calculateAdvisedCredits();
+        boolean addedAny = false;
         for (String code : selectedCourseCodes) {
-            Course course = preAdvisedCourses.stream()
-                    .filter(c -> c.getCode().equals(code))
-                    .findFirst()
-                    .orElse(null);
-            if (course == null || preAdvisedCourseCodes.contains(code)) {
-                continue;
-            }
+            if (preAdvisedCourseCodes.contains(code)) continue;
+            Course course = preAdvisedCourses.stream().filter(c -> c.getCode().equals(code)).findFirst().orElse(null);
+            if (course == null) continue;
             if (totalCredits + course.getCredit() > 18) {
-                JOptionPane.showMessageDialog(null, "Exceeds maximum credit limit of 18 for " + course.getCode());
-                return false;
+                JOptionPane.showMessageDialog(null, "Cannot add " + code + ": exceeds maximum credit limit of 18.");
+                continue;
             }
             preAdvisedCourseCodes.add(code);
             totalCredits += course.getCredit();
+            addedAny = true;
         }
-
-        if (!preAdvisedCourseCodes.isEmpty()) {
+        if (addedAny) {
             studentPreAdvisedCourseCodes.put(student.getId(), preAdvisedCourseCodes);
-            return true;
         }
-        return false;
+        return addedAny;
     }
 
     public boolean adviseSection(Course selectedSection) {
@@ -67,7 +54,6 @@ public class Advising {
             JOptionPane.showMessageDialog(null, "You must complete pre-advising first.");
             return false;
         }
-
         List<Course> advisedCourses = studentAdvisedCourses.getOrDefault(student.getId(), new ArrayList<>());
         String selectedCourseCode = selectedSection.getCode();
         if (advisedCourses.stream().anyMatch(c -> c.getCode().equals(selectedCourseCode))) {
@@ -79,6 +65,11 @@ public class Advising {
                 JOptionPane.showMessageDialog(null, "Time conflict with " + advised.getCode() + " (" + advised.getTimeSlot() + " " + advised.getTime() + ").");
                 return false;
             }
+        }
+        int totalCredits = calculateCurrentPreAdvisedCredits() + calculateAdvisedCredits() + selectedSection.getCredit();
+        if (totalCredits > 18) {
+            JOptionPane.showMessageDialog(null, "Cannot advise " + selectedSection.getCode() + ": exceeds maximum credit limit of 18.");
+            return false;
         }
         advisedCourses.add(selectedSection);
         preAdvisedCourseCodes.remove(selectedCourseCode);
@@ -104,6 +95,52 @@ public class Advising {
 
     public List<String> getPreAdvisedCourseCodes() {
         return studentPreAdvisedCourseCodes.getOrDefault(student.getId(), new ArrayList<>());
+    }
+
+    public void dropPreAdvisedCourse(String code) {
+        List<String> preAdvisedCourseCodes = studentPreAdvisedCourseCodes.getOrDefault(student.getId(), new ArrayList<>());
+        preAdvisedCourseCodes.remove(code);
+        if (preAdvisedCourseCodes.isEmpty()) {
+            studentPreAdvisedCourseCodes.remove(student.getId());
+        } else {
+            studentPreAdvisedCourseCodes.put(student.getId(), preAdvisedCourseCodes);
+        }
+    }
+
+    public void dropAdvisedCourse(String code) {
+        List<Course> advisedCourses = studentAdvisedCourses.getOrDefault(student.getId(), new ArrayList<>());
+        advisedCourses.removeIf(c -> c.getCode().equals(code));
+        if (advisedCourses.isEmpty()) {
+            studentAdvisedCourses.remove(student.getId());
+        } else {
+            studentAdvisedCourses.put(student.getId(), advisedCourses);
+        }
+        // Add back to pre-advised
+        List<String> preAdvisedCourseCodes = studentPreAdvisedCourseCodes.getOrDefault(student.getId(), new ArrayList<>());
+        if (!preAdvisedCourseCodes.contains(code)) {
+            preAdvisedCourseCodes.add(code);
+        }
+        studentPreAdvisedCourseCodes.put(student.getId(), preAdvisedCourseCodes);
+    }
+
+    private int calculateCurrentPreAdvisedCredits() {
+        int total = 0;
+        List<String> codes = getPreAdvisedCourseCodes();
+        for (String code : codes) {
+            Course c = preAdvisedCourses.stream().filter(course -> course.getCode().equals(code)).findFirst().orElse(null);
+            if (c != null) {
+                total += c.getCredit();
+            }
+        }
+        return total;
+    }
+
+    private int calculateAdvisedCredits() {
+        int total = 0;
+        for (Course c : getAdvisedCourses()) {
+            total += c.getCredit();
+        }
+        return total;
     }
 
     public String getAdvisingSlip() {
