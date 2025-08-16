@@ -27,14 +27,130 @@ public class Chatbot {
     
     static {
         // Mock prerequisites until actual data is provided
-        coursePrerequisites.put("MIS107", "None");
+        coursePrerequisites.put("ECO101", "NONE");
+        coursePrerequisites.put("ECO104", "ECO101");
+        coursePrerequisites.put("MIS107", "NONE");
+        coursePrerequisites.put("BUS251", "ENG105");
+        coursePrerequisites.put("BUS172", "NONE");
+        coursePrerequisites.put("BUS173", "BUS172");
+        coursePrerequisites.put("BUS135", "BUS112");
+        coursePrerequisites.put("ACT201", "NONE");
+        coursePrerequisites.put("ACT202", "ACT201");
+        coursePrerequisites.put("FIN254", "ACT201 & BUS172");
+        coursePrerequisites.put("LAW200", "NONE");
+        coursePrerequisites.put("INB372", "MKT202");
+        coursePrerequisites.put("MKT202", "NONE");
         coursePrerequisites.put("MIS207", "MIS107");
-        coursePrerequisites.put("ACT201", "None");
-        coursePrerequisites.put("FIN254", "ACT201");
-        coursePrerequisites.put("CSE101", "None");
-        coursePrerequisites.put("MAT101", "None");
-        coursePrerequisites.put("ENG102", "None");
-        coursePrerequisites.put("PHY101", "MAT101");
+        coursePrerequisites.put("MGT212", "NONE");
+        coursePrerequisites.put("MGT351", "MGT212");
+        coursePrerequisites.put("MGT314", "BUS172 & MKT202");
+        coursePrerequisites.put("MGT368", "MGT212");
+        coursePrerequisites.put("MGT489", "COMPLETE 100 CREDITS");
+        coursePrerequisites.put("ENG103", "ENG102");
+        coursePrerequisites.put("ENG105", "ENG103");
+        coursePrerequisites.put("BEN205", "NONE");
+        coursePrerequisites.put("PHI401", "NONE");
+        coursePrerequisites.put("HIS103", "NONE");
+        coursePrerequisites.put("HIS101", "NONE");
+        coursePrerequisites.put("HIS102", "NONE");
+        coursePrerequisites.put("HIS202", "NONE");
+        coursePrerequisites.put("HIS205", "NONE");
+        coursePrerequisites.put("POL101", "NONE");
+        coursePrerequisites.put("POL202", "NONE");
+        coursePrerequisites.put("POL104", "NONE");
+        coursePrerequisites.put("PAD201", "NONE");
+        coursePrerequisites.put("SOC101", "NONE");
+        coursePrerequisites.put("GEO205", "NONE");
+        coursePrerequisites.put("ANT101", "NONE");
+        coursePrerequisites.put("BIO103", "NONE");
+        coursePrerequisites.put("BIO103L", "NONE");
+        coursePrerequisites.put("ENV107", "NONE");
+        coursePrerequisites.put("ENV107L", "NONE");
+        coursePrerequisites.put("PBH101", "NONE");
+        coursePrerequisites.put("PBH101L", "NONE");
+        coursePrerequisites.put("PSY101", "NONE");
+        coursePrerequisites.put("PSY101L", "NONE");
+        coursePrerequisites.put("PHY107", "NONE");
+        coursePrerequisites.put("PHY107L", "NONE");
+        coursePrerequisites.put("CHE101", "NONE");
+        coursePrerequisites.put("CHE101L", "NONE");
+        coursePrerequisites.put("MKT337", "MKT202");
+        coursePrerequisites.put("MKT344", "MKT202");
+        coursePrerequisites.put("MKT460", "MKT202");
+        coursePrerequisites.put("MKT470", "BUS173/MKT202");
+        coursePrerequisites.put("MKT412", "MKT202");
+        coursePrerequisites.put("MKT465", "MKT202");
+        coursePrerequisites.put("MKT382", "MKT202");
+        coursePrerequisites.put("MKT417", "NONE");
+        coursePrerequisites.put("MKT330", "NONE");
+        coursePrerequisites.put("MKT450", "MKT202");
+        coursePrerequisites.put("MKT355", "MKT202");
+        coursePrerequisites.put("MKT445", "MKT202");
+        coursePrerequisites.put("MKT475", "MKT202/MKT470");
+        coursePrerequisites.put("INB400", "FIN444-BEFORE 143 BATCH");
+        coursePrerequisites.put("INB490", "NONE");
+        coursePrerequisites.put("INB480", "INB372");
+        coursePrerequisites.put("INB410", "MKT202/INB372");
+        coursePrerequisites.put("INB350", "MKT202/INB372");
+        coursePrerequisites.put("INB355", "MKT202/INB372");
+        coursePrerequisites.put("INB415", "MKT202/INB372");
+        coursePrerequisites.put("INB450", "MKT202/INB372");
+        coursePrerequisites.put("INB495", "INB372");
+        coursePrerequisites.put("ACT310", "FIN254");
+        coursePrerequisites.put("ACT320", "ACT310");
+        coursePrerequisites.put("ACT360", "ACT202 & FIN254");
+        coursePrerequisites.put("ACT370", "ACT201 & ACT202");
+        coursePrerequisites.put("ACT380", "ACT201 & ACT202");
+        coursePrerequisites.put("ACT460", "ACT320");
+        coursePrerequisites.put("ACT430", "ACT202 & FIN254");
+        coursePrerequisites.put("ACT410", "ACT201 & ACT202");
+        coursePrerequisites.put("FIN433", "FIN254");
+        coursePrerequisites.put("FIN435", "FIN433");
+        coursePrerequisites.put("FIN440", "FIN254");
+        coursePrerequisites.put("FIN444", "INB372 & FIN254");
+        coursePrerequisites.put("FIN410", "FIN254 & ACT202");
+        coursePrerequisites.put("FIN455", "FIN440");
+        coursePrerequisites.put("FIN464", "FIN254");
+        coursePrerequisites.put("FIN470", "FIN435 & FIN440");
+        coursePrerequisites.put("FIN480", "FIN435 & FIN440");
+        coursePrerequisites.put("MIS210", "MIS207");
+        coursePrerequisites.put("MIS310", "MIS207");
+        coursePrerequisites.put("MIS320", "MIS207");
+        coursePrerequisites.put("MIS470", "MIS310");
+        coursePrerequisites.put("MIS410", "MIS207 & BUS173");
+        coursePrerequisites.put("MIS450", "MIS207 & MIS310");
+        coursePrerequisites.put("MGT490", "MGT314");
+        coursePrerequisites.put("MIS499", "NONE");
+        coursePrerequisites.put("MGT321", "MGT212");
+        coursePrerequisites.put("MGT330", "MGT321");
+        coursePrerequisites.put("MGT370", "MGT321");
+        coursePrerequisites.put("MGT410", "MGT321");
+        coursePrerequisites.put("MGT350", "MGT321");
+        coursePrerequisites.put("HRM340", "MGT351");
+        coursePrerequisites.put("HRM360", "MGT351");
+        coursePrerequisites.put("HRM380", "MGT351");
+        coursePrerequisites.put("HRM450", "MGT351");
+        coursePrerequisites.put("HRM370", "MGT351");
+        coursePrerequisites.put("HRM410", "MGT351");
+        coursePrerequisites.put("HRM499", "MGT351");
+        coursePrerequisites.put("HRM470", "MGT351");
+        coursePrerequisites.put("SCM310", "MKT202 & MGT212");
+        coursePrerequisites.put("SCM320", "NONE");
+        coursePrerequisites.put("SCM450", "MGT314");
+        coursePrerequisites.put("SCM360", "MKT202 & MGT212");
+        coursePrerequisites.put("SCM460", "NONE");
+        coursePrerequisites.put("SCM390", "NONE");
+        coursePrerequisites.put("MGT470", "NONE");
+        coursePrerequisites.put("ECO201", "ECO101 & BUS135");
+        coursePrerequisites.put("ECO204", "ECO101 & ECO104");
+        coursePrerequisites.put("ECO328", "ECO101 & ECO104");
+        coursePrerequisites.put("ECO348", "ECO101 & ECO104");
+        coursePrerequisites.put("ECO372", "BUS173");
+        coursePrerequisites.put("ECO472", "ECO372");
+
+
+        
+      
     }
 
     public String calculateGrade(String scoreInput) {
@@ -61,3 +177,4 @@ public class Chatbot {
         return "Course: " + courseCode + "\nPrerequisites: " + prereq;
     }
 }
+
