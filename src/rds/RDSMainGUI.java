@@ -65,7 +65,6 @@ public class RDSMainGUI {
                     String studentId = parts[0];
                     Course course = new Course(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], Integer.parseInt(parts[7]));
                     studentAdvisedCourses.computeIfAbsent(studentId, k -> new ArrayList<>()).add(course);
-                    studentPreAdvisedCourseCodes.computeIfAbsent(studentId, k -> new ArrayList<>()).add(course.getCode());
                 }
             }
         } catch (IOException e) {
@@ -216,7 +215,7 @@ public class RDSMainGUI {
         contactPanel.add(mailingAddressField);
 
         // Parent/Guardian Information Panel
-        JPanel parentPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel parentPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         parentPanel.setBorder(BorderFactory.createTitledBorder("Parent/Guardian Information"));
         JLabel fatherNameLabel = new JLabel("Father's Name*:");
         JTextField fatherNameField = new JTextField();
@@ -229,7 +228,7 @@ public class RDSMainGUI {
         guardianNameField.setToolTipText("Enter your guardian's name");
         JLabel phoneNumberLabel = new JLabel("Phone Number*:");
         JTextField phoneNumberField = new JTextField();
-        phoneNumberField.setToolTipText("Enter an additional phone number");
+        phoneNumberField.setToolTipText("Enter parent or guardian phone number");
         parentPanel.add(fatherNameLabel);
         parentPanel.add(fatherNameField);
         parentPanel.add(motherNameLabel);
@@ -240,23 +239,33 @@ public class RDSMainGUI {
         parentPanel.add(phoneNumberField);
 
         // Optional Information Panel
-        JPanel optionalPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        JPanel optionalPanel = new JPanel(new GridLayout(5, 2, 10, 10));
         optionalPanel.setBorder(BorderFactory.createTitledBorder("Optional Information"));
-        JLabel nidLabel = new JLabel("NID Number:");
+        JLabel nidLabel = new JLabel("NID Number (Optional):");
         JTextField nidField = new JTextField();
         nidField.setToolTipText("Enter your National ID number (optional)");
-        JLabel birthRegLabel = new JLabel("Birth Reg Number:");
+        JLabel birthRegLabel = new JLabel("Birth Reg Number (Optional):");
         JTextField birthRegField = new JTextField();
         birthRegField.setToolTipText("Enter your birth registration number (optional)");
-        JLabel maritalStatusLabel = new JLabel("Marital Status:");
+        JLabel maritalStatusLabel = new JLabel("Marital Status (Optional):");
         JTextField maritalStatusField = new JTextField();
         maritalStatusField.setToolTipText("Enter your marital status (e.g., Single, Married) (optional)");
+        JLabel bloodGroupLabel = new JLabel("Blood Group (Optional):");
+        JTextField bloodGroupField = new JTextField();
+        bloodGroupField.setToolTipText("Enter your blood group (optional)");
+        JLabel parentAddressLabel = new JLabel("Parent Address (Optional):");
+        JTextField parentAddressField = new JTextField();
+        parentAddressField.setToolTipText("Enter your parent address (optional)");
         optionalPanel.add(nidLabel);
         optionalPanel.add(nidField);
         optionalPanel.add(birthRegLabel);
         optionalPanel.add(birthRegField);
         optionalPanel.add(maritalStatusLabel);
         optionalPanel.add(maritalStatusField);
+        optionalPanel.add(bloodGroupLabel);
+        optionalPanel.add(bloodGroupField);
+        optionalPanel.add(parentAddressLabel);
+        optionalPanel.add(parentAddressField);
 
         // Note about required fields
         JLabel noteLabel = new JLabel("* indicates required fields", SwingConstants.CENTER);
@@ -304,8 +313,8 @@ public class RDSMainGUI {
             String nidNumber = nidField.getText();
             String birthRegNumber = birthRegField.getText();
             String maritalStatus = maritalStatusField.getText();
-            String bloodGroup = "";
-            String parentAddress = "";
+            String bloodGroup = bloodGroupField.getText();
+            String parentAddress = parentAddressField.getText();
             if (password.isEmpty() || name.isEmpty() || email.isEmpty() || degreeName.isEmpty() ||
                 cellPhone.isEmpty() || dob.isEmpty() || sex.isEmpty() || citizenship.isEmpty() ||
                 fatherName.isEmpty() || motherName.isEmpty() || guardianName.isEmpty() ||
@@ -422,11 +431,13 @@ public class RDSMainGUI {
         JButton profileButton = new JButton("Profile");
         JButton advisingButton = new JButton("Advising");
         JButton paymentsButton = new JButton("Payments");
+        JButton courseDropButton = new JButton("Course Drop");
         JButton chatbotButton = new JButton("Chatbot");
         JButton logoutButton = new JButton("Logout");
         buttonPanel.add(profileButton);
         buttonPanel.add(advisingButton);
         buttonPanel.add(paymentsButton);
+        buttonPanel.add(courseDropButton);
         buttonPanel.add(chatbotButton);
         buttonPanel.add(logoutButton);
         frame.add(buttonPanel, BorderLayout.CENTER);
@@ -441,6 +452,10 @@ public class RDSMainGUI {
         paymentsButton.addActionListener(e -> {
             frame.dispose();
             showPaymentsWindow();
+        });
+        courseDropButton.addActionListener(e -> {
+            frame.dispose();
+            showCourseDropWindow();
         });
         chatbotButton.addActionListener(e -> {
             frame.dispose();
@@ -519,52 +534,105 @@ public class RDSMainGUI {
     private static void showEditProfileWindow() {
         JFrame frame = new JFrame("Edit Profile");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(500, 500);
-        frame.setLayout(new GridLayout(10, 2, 10, 10));
-        JLabel nameLabel = new JLabel("Full Name:");
-        JTextField nameField = new JTextField(loggedInStudent.getName());
+        frame.setSize(600, 600);
+        frame.setLayout(new BorderLayout(10, 10));
+
+        // Main panel with padding
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Contact Information Panel
+        JPanel contactPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        contactPanel.setBorder(BorderFactory.createTitledBorder("Contact Information"));
         JLabel emailLabel = new JLabel("Email:");
         JTextField emailField = new JTextField(loggedInStudent.getEmail());
+        emailField.setToolTipText("Enter your email address (e.g., user@university.com)");
         JLabel cellPhoneLabel = new JLabel("Cell Phone:");
         JTextField cellPhoneField = new JTextField(loggedInStudent.getCellPhone());
+        cellPhoneField.setToolTipText("Enter your cell phone number");
         JLabel mailingAddressLabel = new JLabel("Mailing Address:");
         JTextField mailingAddressField = new JTextField(loggedInStudent.getMailingAddress());
+        mailingAddressField.setToolTipText("Enter your mailing address");
+        contactPanel.add(emailLabel);
+        contactPanel.add(emailField);
+        contactPanel.add(cellPhoneLabel);
+        contactPanel.add(cellPhoneField);
+        contactPanel.add(mailingAddressLabel);
+        contactPanel.add(mailingAddressField);
+
+        // Personal Information Panel
+        JPanel personalPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        personalPanel.setBorder(BorderFactory.createTitledBorder("Personal Information"));
+        JLabel nameLabel = new JLabel("Full Name:");
+        JTextField nameField = new JTextField(loggedInStudent.getName());
+        nameField.setToolTipText("Enter your full name");
+        personalPanel.add(nameLabel);
+        personalPanel.add(nameField);
+
+        // Optional Information Panel
+        JPanel optionalPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        optionalPanel.setBorder(BorderFactory.createTitledBorder("Optional Information"));
         JLabel phoneNumberLabel = new JLabel("Phone Number:");
         JTextField phoneNumberField = new JTextField(loggedInStudent.getPhoneNumber());
+        phoneNumberField.setToolTipText("Enter an additional phone number");
         JLabel nidLabel = new JLabel("NID Number:");
         JTextField nidField = new JTextField(loggedInStudent.getNidNumber());
+        nidField.setToolTipText("Enter your National ID number (optional)");
         JLabel birthRegLabel = new JLabel("Birth Reg Number:");
         JTextField birthRegField = new JTextField(loggedInStudent.getBirthRegNumber());
+        birthRegField.setToolTipText("Enter your birth registration number (optional)");
         JLabel maritalStatusLabel = new JLabel("Marital Status:");
         JTextField maritalStatusField = new JTextField(loggedInStudent.getMaritalStatus());
+        maritalStatusField.setToolTipText("Enter your marital status (e.g., Single, Married) (optional)");
         JLabel bloodGroupLabel = new JLabel("Blood Group:");
         JTextField bloodGroupField = new JTextField(loggedInStudent.getBloodGroup());
+        bloodGroupField.setToolTipText("Enter your blood group (e.g., A+, O-) (optional)");
+        optionalPanel.add(phoneNumberLabel);
+        optionalPanel.add(phoneNumberField);
+        optionalPanel.add(nidLabel);
+        optionalPanel.add(nidField);
+        optionalPanel.add(birthRegLabel);
+        optionalPanel.add(birthRegField);
+        optionalPanel.add(maritalStatusLabel);
+        optionalPanel.add(maritalStatusField);
+        optionalPanel.add(bloodGroupLabel);
+        optionalPanel.add(bloodGroupField);
+
+        // Parent Address Panel
+        JPanel parentAddressPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        parentAddressPanel.setBorder(BorderFactory.createTitledBorder("Parent Address"));
         JLabel parentAddressLabel = new JLabel("Parent Address:");
         JTextField parentAddressField = new JTextField(loggedInStudent.getParentAddress());
+        parentAddressField.setToolTipText("Enter your parent or guardian's address (optional)");
+        parentAddressPanel.add(parentAddressLabel);
+        parentAddressPanel.add(parentAddressField);
+
+        // Note about required fields
+        JLabel noteLabel = new JLabel("All fields are optional; leave blank to keep current values", SwingConstants.CENTER);
+
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
-        frame.add(nameLabel);
-        frame.add(nameField);
-        frame.add(emailLabel);
-        frame.add(emailField);
-        frame.add(cellPhoneLabel);
-        frame.add(cellPhoneField);
-        frame.add(mailingAddressLabel);
-        frame.add(mailingAddressField);
-        frame.add(phoneNumberLabel);
-        frame.add(phoneNumberField);
-        frame.add(nidLabel);
-        frame.add(nidField);
-        frame.add(birthRegLabel);
-        frame.add(birthRegField);
-        frame.add(maritalStatusLabel);
-        frame.add(maritalStatusField);
-        frame.add(bloodGroupLabel);
-        frame.add(bloodGroupField);
-        frame.add(parentAddressLabel);
-        frame.add(parentAddressField);
-        frame.add(saveButton);
-        frame.add(cancelButton);
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+
+        // Add components to main panel
+        mainPanel.add(personalPanel);
+        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(contactPanel);
+        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(optionalPanel);
+        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(parentAddressPanel);
+        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(noteLabel);
+
+        // Add main panel and button panel to frame
+        frame.add(new JScrollPane(mainPanel), BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
         saveButton.addActionListener(e -> {
             String email = emailField.getText();
             if (!email.isEmpty() && !validateEmail(email)) {
@@ -586,10 +654,12 @@ public class RDSMainGUI {
             frame.dispose();
             showProfileWindow();
         });
+
         cancelButton.addActionListener(e -> {
             frame.dispose();
             showProfileWindow();
         });
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -648,34 +718,38 @@ public class RDSMainGUI {
         frame.setLayout(new BorderLayout());
         Advising advising = new Advising(loggedInStudent, preAdvisedCourses, studentAdvisedCourses, studentPreAdvisedCourseCodes);
         JTabbedPane tabbedPane = new JTabbedPane();
+
         // Pre-Advising Tab
         JPanel preAdvisingPanel = new JPanel(new BorderLayout());
-        String[] preAdvisingColumns = {"Code", "Title", "Credits"};
+        String[] preAdvisingColumns = {"Code", "Title"};
         List<Course> uniqueCourses = advising.getUniqueCourses();
-        Object[][] preAdvisingData = new Object[uniqueCourses.size()][3];
+        Object[][] preAdvisingData = new Object[uniqueCourses.size()][2];
         for (int i = 0; i < uniqueCourses.size(); i++) {
             Course course = uniqueCourses.get(i);
             preAdvisingData[i][0] = course.getCode();
             preAdvisingData[i][1] = course.getName();
-            preAdvisingData[i][2] = course.getCredit();
         }
         JTable preAdvisingTable = new JTable(preAdvisingData, preAdvisingColumns);
         preAdvisingTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         preAdvisingPanel.add(new JScrollPane(preAdvisingTable), BorderLayout.CENTER);
-        JButton preAdviseButton = new JButton("Pre-Advise Selected Courses");
-        preAdvisingPanel.add(preAdviseButton, BorderLayout.SOUTH);
-        preAdviseButton.addActionListener(e -> {
+        JButton addButton = new JButton("Add Selected Courses");
+        preAdvisingPanel.add(addButton, BorderLayout.SOUTH);
+        addButton.addActionListener(e -> {
             int[] selectedRows = preAdvisingTable.getSelectedRows();
             List<String> selectedCourseCodes = new ArrayList<>();
             for (int row : selectedRows) {
                 selectedCourseCodes.add((String) preAdvisingTable.getValueAt(row, 0));
             }
-            if (advising.preAdviseCourses(selectedCourseCodes)) {
-                JOptionPane.showMessageDialog(frame, "Pre-advising completed. Proceed to Advising Window tab.");
-                saveAdvisedCourses();
+            if (advising.addPreAdvisedCourses(selectedCourseCodes)) {
+                JOptionPane.showMessageDialog(frame, "Added selected courses to pre-advising.");
+                frame.dispose();
+                showAdvisingWindow();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Could not add courses, perhaps credit limit exceeded or already added.");
             }
         });
         tabbedPane.addTab("Pre-Advising", preAdvisingPanel);
+
         // Advising Window Tab
         JPanel advisingWindowPanel = new JPanel(new BorderLayout());
         String[] advisingColumns = {"Code", "Title", "Section", "Time", "Day", "Faculty", "Credits"};
@@ -719,18 +793,47 @@ public class RDSMainGUI {
             showAdvisingWindow();
         });
         tabbedPane.addTab("Advising Window", advisingWindowPanel);
+
         // Advising Slip Tab
         JPanel slipPanel = new JPanel(new BorderLayout());
         JTextArea slipArea = new JTextArea(advising.getAdvisingSlip());
         slipArea.setEditable(false);
         slipPanel.add(new JScrollPane(slipArea), BorderLayout.CENTER);
         tabbedPane.addTab("Advising Slip", slipPanel);
+
         // View Pre-Advised Courses Tab
-        JPanel viewPanel = new JPanel(new BorderLayout());
-        JTextArea viewArea = new JTextArea(advising.getPreAdvisedCoursesString());
-        viewArea.setEditable(false);
-        viewPanel.add(new JScrollPane(viewArea), BorderLayout.CENTER);
-        tabbedPane.addTab("View Pre-Advised", viewPanel);
+        JPanel managePanel = new JPanel(new BorderLayout());
+        JPanel prePanel = new JPanel();
+        prePanel.setLayout(new BoxLayout(prePanel, BoxLayout.Y_AXIS));
+        List<String> preCodes = advising.getPreAdvisedCourseCodes();
+        for (String code : preCodes) {
+            Course course = preAdvisedCourses.stream().filter(c -> c.getCode().equals(code)).findFirst().orElse(null);
+            if (course == null) continue;
+            JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            row.add(new JLabel(code + " - " + course.getName()));
+            JButton dropButton = new JButton("X");
+            dropButton.setForeground(Color.RED);
+            dropButton.addActionListener(e -> {
+                int confirm = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Are you sure you want to drop " + code + " from pre-advised courses?",
+                    "Confirm Drop",
+                    JOptionPane.YES_NO_OPTION
+                );
+                if (confirm == JOptionPane.YES_OPTION) {
+                    advising.dropPreAdvisedCourse(code);
+                    saveAdvisedCourses();
+                    JOptionPane.showMessageDialog(frame, "Dropped " + code);
+                    frame.dispose();
+                    showAdvisingWindow();
+                }
+            });
+            row.add(dropButton);
+            prePanel.add(row);
+        }
+        managePanel.add(new JScrollPane(prePanel), BorderLayout.CENTER);
+        tabbedPane.addTab("View Pre-Advised", managePanel);
+
         frame.add(tabbedPane, BorderLayout.CENTER);
         JButton backButton = new JButton("Back");
         frame.add(backButton, BorderLayout.SOUTH);
@@ -738,6 +841,49 @@ public class RDSMainGUI {
             frame.dispose();
             showHomeWindow();
         });
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    private static void showCourseDropWindow() {
+        JFrame frame = new JFrame("Course Drop");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(800, 400);
+        frame.setLayout(new BorderLayout());
+
+        Advising advising = new Advising(loggedInStudent, preAdvisedCourses, studentAdvisedCourses, studentPreAdvisedCourseCodes);
+        String[] columns = {"Code", "Title", "Section", "Time", "Day", "Faculty", "Credits", "Drop"};
+        List<Course> advisedCourses = advising.getAdvisedCourses();
+        Object[][] data = new Object[advisedCourses.size()][8];
+        for (int i = 0; i < advisedCourses.size(); i++) {
+            Course course = advisedCourses.get(i);
+            data[i][0] = course.getCode();
+            data[i][1] = course.getName();
+            data[i][2] = course.getSection();
+            data[i][3] = course.getTimeSlot();
+            data[i][4] = course.getTime();
+            data[i][5] = course.getFacultyInitial();
+            data[i][6] = course.getCredit();
+            data[i][7] = "";
+        }
+        JTable table = new JTable(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 7;
+            }
+        };
+        table.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer());
+        table.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor(table, new JCheckBox(), advising, frame));
+        table.getColumnModel().getColumn(7).setPreferredWidth(50);
+        frame.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        JButton backButton = new JButton("Back");
+        frame.add(backButton, BorderLayout.SOUTH);
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            showHomeWindow();
+        });
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -830,5 +976,79 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    // Custom renderer for the drop button
+    static class ButtonRenderer extends JButton implements javax.swing.table.TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setText("X");
+            setForeground(Color.RED);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return this;
+        }
+    }
+
+    // Custom editor for the drop button
+    static class ButtonEditor extends DefaultCellEditor {
+        private JButton button;
+        private String code;
+        private Advising advising;
+        private JFrame frame;
+        private JTable table;
+        private boolean isPushed;
+
+        public ButtonEditor(JTable table, JCheckBox checkBox, Advising advising, JFrame frame) {
+            super(checkBox);
+            this.table = table;
+            this.advising = advising;
+            this.frame = frame;
+            button = new JButton("X");
+            button.setOpaque(true);
+            button.setForeground(Color.RED);
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            code = (String) table.getValueAt(row, 0);
+            isPushed = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (isPushed) {
+                if (table.getColumnCount() > 7 && table.getColumnName(7).equals("Drop")) {
+                    int confirm = JOptionPane.showConfirmDialog(
+                        frame,
+                        "Are you sure you want to drop " + code + " from advised courses?",
+                        "Confirm Drop",
+                        JOptionPane.YES_NO_OPTION
+                    );
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        advising.dropAdvisedCourse(code);
+                        JOptionPane.showMessageDialog(frame, "Dropped " + code + " and moved back to pre-advised.");
+                        frame.dispose();
+                        showCourseDropWindow();
+                    }
+                }
+            }
+            isPushed = false;
+            return "";
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+
+        @Override
+        protected void fireEditingStopped() {
+            super.fireEditingStopped();
+        }
+    }
 }
-  
