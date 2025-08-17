@@ -912,71 +912,80 @@ public class RDSMainGUI {
         frame.setVisible(true);
     }
 
+
     private static void showChatbotWindow() {
         JFrame frame = new JFrame("RDS Chatbot");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(600, 400);
         frame.setLayout(new BorderLayout());
-
         JTextArea chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.append("Welcome to the RDS Chatbot!\n");
-        chatArea.append("Type 'grade <score>' to calculate your grade (e.g., 'grade 85').\n");
-        chatArea.append("Type 'prereq <course code>' to check prerequisites (e.g., 'prereq MIS207').\n");
-        chatArea.append("Type 'exit' to return to the home window.\n\n");
-
+        chatArea.append("Commands:\n");
+        chatArea.append("- 'grade <score>' to calculate grade for a score (e.g., 'grade 85')\n");
+        chatArea.append("- 'prereq <course code>' to check prerequisites (e.g., 'prereq MIS207')\n");
+        chatArea.append("- 'addcourse <course code> <credits> <grade>' to add a course (e.g., 'addcourse CS101 3.0 A')\n");
+        chatArea.append("  Valid grades: A, A-, B+, B, B-, C+, C, C-, D+, D, F, I (Incomplete), W (Withdrawal)\n");
+        chatArea.append("- 'calculate' to compute GPA for added courses\n");
+        chatArea.append("- 'listcourses' to view added courses\n");
+        chatArea.append("- 'clearcourses' to clear added courses\n");
+        chatArea.append("- 'exit' to return to home window\n\n");
         JTextField inputField = new JTextField();
         JButton sendButton = new JButton("Send");
         JButton backButton = new JButton("Back");
-
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.add(inputField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
-
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(inputPanel, BorderLayout.CENTER);
         bottomPanel.add(backButton, BorderLayout.SOUTH);
-
         frame.add(new JScrollPane(chatArea), BorderLayout.CENTER);
         frame.add(bottomPanel, BorderLayout.SOUTH);
-
         Chatbot chatbot = new Chatbot();
-
         sendButton.addActionListener(e -> {
             String input = inputField.getText().trim();
             if (input.isEmpty()) {
                 return;
             }
             chatArea.append("You: " + input + "\n");
-            if (input.toLowerCase().startsWith("grade ")) {
-                String score = input.substring(6).trim();
-                String response = chatbot.calculateGrade(score);
-                chatArea.append("Chatbot: " + response + "\n\n");
-            } else if (input.toLowerCase().startsWith("prereq ")) {
+           if (input.toLowerCase().startsWith("prereq ")) {
                 String courseCode = input.substring(7).trim();
                 String response = chatbot.getPrerequisites(courseCode);
                 chatArea.append("Chatbot: " + response + "\n\n");
+            } else if (input.toLowerCase().startsWith("addcourse ")) {
+                String[] parts = input.substring(9).trim().split("\\s+");
+                if (parts.length != 3) {
+                    chatArea.append("Chatbot: Invalid format. Use 'addcourse <course code> <credits> <grade>'.\n\n");
+                } else {
+                    String response = chatbot.addCourse(parts[0], parts[1], parts[2]);
+                    chatArea.append("Chatbot: " + response + "\n\n");
+                }
+            } else if (input.toLowerCase().equals("calculate")) {
+                String response = chatbot.calculateGPA();
+                chatArea.append("Chatbot: " + response + "\n\n");
+            } else if (input.toLowerCase().equals("listcourses")) {
+                String response = chatbot.listCourses();
+                chatArea.append("Chatbot: " + response + "\n\n");
+            } else if (input.toLowerCase().equals("clearcourses")) {
+                chatbot.clearCourses();
+                chatArea.append("Chatbot: All courses cleared.\n\n");
             } else if (input.toLowerCase().equals("exit")) {
                 frame.dispose();
                 showHomeWindow();
             } else {
-                chatArea.append("Chatbot: Invalid command. Use 'grade <score>', 'prereq <course code>', or 'exit'.\n\n");
+                chatArea.append("Chatbot: Invalid command. Use 'grade <score>', 'prereq <course code>', 'addcourse <course code> <credits> <grade>', 'calculate', 'listcourses', 'clearcourses', or 'exit'.\n\n");
             }
             inputField.setText("");
             chatArea.setCaretPosition(chatArea.getDocument().getLength());
         });
-
         inputField.addActionListener(e -> sendButton.doClick());
-
         backButton.addActionListener(e -> {
             frame.dispose();
             showHomeWindow();
         });
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     // Custom renderer for the drop button
     static class ButtonRenderer extends JButton implements javax.swing.table.TableCellRenderer {
         public ButtonRenderer() {
