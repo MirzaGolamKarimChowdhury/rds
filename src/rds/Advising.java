@@ -28,18 +28,18 @@ public class Advising {
 
     public boolean addPreAdvisedCourses(List<String> selectedCourseCodes) {
         List<String> preAdvisedCourseCodes = studentPreAdvisedCourseCodes.getOrDefault(student.getId(), new ArrayList<>());
-        int totalCredits = calculateCurrentPreAdvisedCredits() + calculateAdvisedCredits();
+        int totalPreAdvisedCredits = calculateCurrentPreAdvisedCredits();
         boolean addedAny = false;
         for (String code : selectedCourseCodes) {
             if (preAdvisedCourseCodes.contains(code)) continue;
             Course course = preAdvisedCourses.stream().filter(c -> c.getCode().equals(code)).findFirst().orElse(null);
             if (course == null) continue;
-            if (totalCredits + course.getCredit() > 18) {
-                JOptionPane.showMessageDialog(null, "Cannot add " + code + ": exceeds maximum credit limit of 18.");
+            if (totalPreAdvisedCredits + course.getCredit() > 18) {
+                JOptionPane.showMessageDialog(null, "Cannot add " + code + ": exceeds maximum pre-advised credit limit of 18.");
                 continue;
             }
             preAdvisedCourseCodes.add(code);
-            totalCredits += course.getCredit();
+            totalPreAdvisedCredits += course.getCredit();
             addedAny = true;
         }
         if (addedAny) {
@@ -56,6 +56,10 @@ public class Advising {
         }
         List<Course> advisedCourses = studentAdvisedCourses.getOrDefault(student.getId(), new ArrayList<>());
         String selectedCourseCode = selectedSection.getCode();
+        if (!preAdvisedCourseCodes.contains(selectedCourseCode)) {
+            JOptionPane.showMessageDialog(null, "Cannot advise " + selectedCourseCode + ": it is not pre-advised.");
+            return false;
+        }
         if (advisedCourses.stream().anyMatch(c -> c.getCode().equals(selectedCourseCode))) {
             JOptionPane.showMessageDialog(null, "A section for " + selectedCourseCode + " is already advised.");
             return false;
@@ -66,9 +70,9 @@ public class Advising {
                 return false;
             }
         }
-        int totalCredits = calculateCurrentPreAdvisedCredits() + calculateAdvisedCredits() + selectedSection.getCredit();
-        if (totalCredits > 18) {
-            JOptionPane.showMessageDialog(null, "Cannot advise " + selectedSection.getCode() + ": exceeds maximum credit limit of 18.");
+        int totalAdvisedCredits = calculateAdvisedCredits() + selectedSection.getCredit();
+        if (totalAdvisedCredits > 15) {
+            JOptionPane.showMessageDialog(null, "Cannot advise " + selectedSection.getCode() + ": exceeds maximum advised credit limit of 15.");
             return false;
         }
         advisedCourses.add(selectedSection);
@@ -115,10 +119,12 @@ public class Advising {
         } else {
             studentAdvisedCourses.put(student.getId(), advisedCourses);
         }
-        // Add back to pre-advised
         List<String> preAdvisedCourseCodes = studentPreAdvisedCourseCodes.getOrDefault(student.getId(), new ArrayList<>());
         if (!preAdvisedCourseCodes.contains(code)) {
-            preAdvisedCourseCodes.add(code);
+            Course course = preAdvisedCourses.stream().filter(c -> c.getCode().equals(code)).findFirst().orElse(null);
+            if (course != null && calculateCurrentPreAdvisedCredits() + course.getCredit() <= 18) {
+                preAdvisedCourseCodes.add(code);
+            }
         }
         studentPreAdvisedCourseCodes.put(student.getId(), preAdvisedCourseCodes);
     }
@@ -141,6 +147,10 @@ public class Advising {
             total += c.getCredit();
         }
         return total;
+    }
+
+    public int getAdvisedCredits() {
+        return calculateAdvisedCredits();
     }
 
     public String getAdvisingSlip() {
