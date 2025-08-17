@@ -1,14 +1,14 @@
 package rds;
-
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.RowFilter;
 import java.awt.*;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
-import java.io.*;
+
 
 public class RDSMainGUI {
     private static List<Student> students = new ArrayList<>();
@@ -90,16 +90,40 @@ public class RDSMainGUI {
     private static void showLoginWindow() {
         JFrame frame = new JFrame("RDS Login");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLayout(new GridLayout(5, 2, 10, 10));
-        JLabel idLabel = new JLabel("ID (7 digits):");
+        frame.setSize(600, 400);
+        frame.setLayout(new GridLayout(4, 6, 10, 15));
+        
+
+
+        
+        // Set the background color to bluish
+        frame.getContentPane().setBackground(new Color(185, 200, 210)); // Black background
+        
+        
+        JLabel idLabel = new JLabel("  ID (7 digits):  ");
+        idLabel.setBounds(300, 300, 300, 300);
+        idLabel.setForeground(Color.BLACK);
         JTextField idField = new JTextField();
-        JLabel passwordLabel = new JLabel("Password:");
+        JLabel passwordLabel = new JLabel("  Password:  ");
+        passwordLabel.setBounds(500, 500, 500, 500);
+        passwordLabel.setForeground(Color.BLACK);
         JPasswordField passwordField = new JPasswordField();
+        
+        // Buttons with black font color and bluish background
         JButton loginButton = new JButton("Login");
+        loginButton.setBounds(100, 100, 250, 100);
+        loginButton.setForeground(Color.BLUE);
+        loginButton.setBackground(Color.WHITE);
+        loginButton.setBorder(BorderFactory.createEtchedBorder());
         JButton createAccountButton = new JButton("Create Account");
+        createAccountButton.setBounds(20, 50, 10, 10);
         JButton forgotPasswordButton = new JButton("Forgot Password");
+        forgotPasswordButton.setBounds(20, 50, 10, 10);
         JButton exitButton = new JButton("Exit");
+        exitButton.setBounds(20, 100, 100, 10);
+
+        
+        // Add components to frame
         frame.add(idLabel);
         frame.add(idField);
         frame.add(passwordLabel);
@@ -108,6 +132,12 @@ public class RDSMainGUI {
         frame.add(createAccountButton);
         frame.add(forgotPasswordButton);
         frame.add(exitButton);
+
+        // Set text fields and password fields with black text color
+        idField.setForeground(Color.BLACK);
+        passwordField.setForeground(Color.BLACK);
+
+        // Action listeners for buttons
         loginButton.addActionListener(e -> {
             String idInput = idField.getText();
             String password = new String(passwordField.getPassword());
@@ -125,22 +155,28 @@ public class RDSMainGUI {
             }
             JOptionPane.showMessageDialog(frame, "Invalid ID or Password.");
         });
+        
         createAccountButton.addActionListener(e -> {
             frame.dispose();
             showCreateAccountWindow();
         });
+        
         forgotPasswordButton.addActionListener(e -> {
             frame.dispose();
             showForgotPasswordWindow();
         });
+        
         exitButton.addActionListener(e -> System.exit(0));
+        
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
     private static void showCreateAccountWindow() {
         JFrame frame = new JFrame("Create New Account");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(600, 700);
+        frame.setBackground(Color.CYAN);
         frame.setLayout(new BorderLayout(10, 10));
         // Main panel with padding
         JPanel mainPanel = new JPanel();
@@ -148,8 +184,9 @@ public class RDSMainGUI {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         // Generated ID
         Random random = new Random();
-        String id = String.format("%010d", random.nextInt(1000000000) + 1000000000);
-        JLabel idLabel = new JLabel("Generated ID: " + id);
+        String id = String.format("%07d", random.nextInt(500000) + 2000000);
+        String idvalue = id + "630";
+        JLabel idLabel = new JLabel("Generated ID: " + idvalue);
         // Account Information Panel
         JPanel accountPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         accountPanel.setBorder(BorderFactory.createTitledBorder("Account Information"));
@@ -310,7 +347,7 @@ public class RDSMainGUI {
                 JOptionPane.showMessageDialog(frame, "Invalid email format. Please enter a valid email (e.g., user@university.com).");
                 return;
             }
-            Student student = new Student(id, password, name, email, degreeName, cellPhone, dob, sex, citizenship,
+            Student student = new Student(idvalue, password, name, email, degreeName, cellPhone, dob, sex, citizenship,
                     fatherName, motherName, guardianName, mailingAddress, phoneNumber);
             student.setNidNumber(nidNumber);
             student.setBirthRegNumber(birthRegNumber);
@@ -319,7 +356,7 @@ public class RDSMainGUI {
             student.setParentAddress(parentAddress);
             students.add(student);
             saveStudents();
-            JOptionPane.showMessageDialog(frame, "Account created successfully! Your ID is: " + id + " (Use first 7 digits for login: " + student.getFirst7DigitsId() + ")");
+            JOptionPane.showMessageDialog(frame, "Account created successfully! Your ID is: " + idvalue + " (Use first 7 digits for login: " + student.getFirst7DigitsId() + ")");
             frame.dispose();
             showLoginWindow();
         });
@@ -332,21 +369,24 @@ public class RDSMainGUI {
     }
     private static void showForgotPasswordWindow() {
         JFrame frame = new JFrame("Forgot Password");
+        frame.setBackground(Color.CYAN);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(400, 300);
         frame.setLayout(new GridLayout(6, 2, 10, 10));
-        JLabel idLabel = new JLabel("10-digit Student ID:");
+        JLabel idLabel = new JLabel("   10-digit Student ID:");
         JTextField idField = new JTextField();
-        JLabel emailLabel = new JLabel("Email:");
+        JLabel emailLabel = new JLabel("   Email:");
         JTextField emailField = new JTextField();
-        JLabel cellPhoneLabel = new JLabel("Cell Phone:");
+        JLabel cellPhoneLabel = new JLabel("   Cell Phone:");
         JTextField cellPhoneField = new JTextField();
-        JLabel newPasswordLabel = new JLabel("New Password:");
+        JLabel newPasswordLabel = new JLabel("   New Password:");
         JPasswordField newPasswordField = new JPasswordField();
-        JLabel confirmPasswordLabel = new JLabel("Confirm Password:");
+        JLabel confirmPasswordLabel = new JLabel("   Confirm Password:");
         JPasswordField confirmPasswordField = new JPasswordField();
         JButton resetButton = new JButton("Reset");
+        resetButton.setForeground(Color.BLUE);
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setForeground(Color.BLUE);
         frame.add(idLabel);
         frame.add(idField);
         frame.add(emailLabel);
@@ -399,15 +439,16 @@ public class RDSMainGUI {
     }
     private static void showHomeWindow() {
         JFrame frame = new JFrame("RDS - Welcome, " + loggedInStudent.getName());
+        frame.setBackground(Color.CYAN);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 600);
+        frame.setSize(1000, 600);
         frame.setLayout(new BorderLayout());
         JPanel topPanel = new JPanel(new GridLayout(3, 1));
-        topPanel.add(new JLabel("Welcome, " + loggedInStudent.getName()));
-        topPanel.add(new JLabel("ID: " + loggedInStudent.getId()));
-        topPanel.add(new JLabel("Degree: " + loggedInStudent.getDegreeName()));
+        topPanel.add(new JLabel("   Welcome, " + loggedInStudent.getName()));
+        topPanel.add(new JLabel("   ID: " + loggedInStudent.getId()));
+        topPanel.add(new JLabel("   Degree: " + loggedInStudent.getDegreeName()));
         frame.add(topPanel, BorderLayout.NORTH);
-        JPanel buttonPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(10, 10, 10, 10));
         JButton profileButton = new JButton("Profile");
         JButton advisingButton = new JButton("Advising");
         JButton paymentsButton = new JButton("Payments");
@@ -510,8 +551,9 @@ public class RDSMainGUI {
     }
     private static void showGradesWindow() {
         JFrame frame = new JFrame("Grades");
+        frame.setBackground(Color.CYAN);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(1000, 300);
+        frame.setSize(1000, 500);
         frame.setLayout(new BorderLayout());
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -781,9 +823,9 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-   
     private static void showAdvisingWindow() {
         JFrame frame = new JFrame("Advising");
+        frame.setBackground(Color.CYAN);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
@@ -991,6 +1033,7 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
     private static void showCourseDropWindow() {
         JFrame frame = new JFrame("Course Drop");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1055,16 +1098,16 @@ public class RDSMainGUI {
     }
     private static void showChatbotWindow() {
         JFrame frame = new JFrame("RDS Chatbot");
+        frame.setBackground(Color.ORANGE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(800, 500);
         frame.setLayout(new BorderLayout());
         JTextArea chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.append("Welcome to the RDS Chatbot!\n");
         chatArea.append("Commands:\n");
-        chatArea.append("- 'grade <score>' to calculate grade for a score (e.g., 'grade 85')\n");
         chatArea.append("- 'prereq <course code>' to check prerequisites (e.g., 'prereq MIS207')\n");
-        chatArea.append("- 'addcourse <course code> <credits> <grade>' to add a course (e.g., 'addcourse CS101 3.0 A')\n");
+        chatArea.append("- 'addcourse <course code> <credits> <grade>' to add a course (e.g., 'addcourse MIS210 3.0 A')\n");
         chatArea.append(" Valid grades: A, A-, B+, B, B-, C+, C, C-, D+, D, F, I (Incomplete), W (Withdrawal)\n");
         chatArea.append("- 'calculate' to compute GPA for added courses\n");
         chatArea.append("- 'listcourses' to view added courses\n");
@@ -1194,4 +1237,3 @@ public class RDSMainGUI {
         }
     }
 }
-
