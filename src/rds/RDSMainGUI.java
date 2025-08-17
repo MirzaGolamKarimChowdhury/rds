@@ -1,9 +1,15 @@
 package rds;
-import javax.swing.*;
+
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import javax.swing.RowFilter;
 import java.awt.*;
-import java.io.*;
 import java.util.*;
 import java.util.List;
+import javax.swing.*;
+
+import java.io.*;
+
 public class RDSMainGUI {
     private static List<Student> students = new ArrayList<>();
     private static List<Course> preAdvisedCourses = new ArrayList<>();
@@ -775,6 +781,7 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+   
     private static void showAdvisingWindow() {
         JFrame frame = new JFrame("Advising");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -782,6 +789,7 @@ public class RDSMainGUI {
         frame.setLayout(new BorderLayout());
         Advising advising = new Advising(loggedInStudent, preAdvisedCourses, studentAdvisedCourses, studentPreAdvisedCourseCodes);
         JTabbedPane tabbedPane = new JTabbedPane();
+
         // Pre-Advising Tab
         JPanel preAdvisingPanel = new JPanel(new BorderLayout());
         String[] preAdvisingColumns = {"Code", "Title"};
@@ -792,8 +800,38 @@ public class RDSMainGUI {
             preAdvisingData[i][0] = course.getCode();
             preAdvisingData[i][1] = course.getName();
         }
-        JTable preAdvisingTable = new JTable(preAdvisingData, preAdvisingColumns);
+        DefaultTableModel preAdvisingModel = new DefaultTableModel(preAdvisingData, preAdvisingColumns);
+        JTable preAdvisingTable = new JTable(preAdvisingModel);
         preAdvisingTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        TableRowSorter<DefaultTableModel> preSorter = new TableRowSorter<>(preAdvisingModel);
+        preAdvisingTable.setRowSorter(preSorter);
+
+        // Add search panel for Pre-Advising
+        JPanel preSearchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel preSearchLabel = new JLabel("Search by Course Code:");
+        JTextField preSearchField = new JTextField(15);
+        JButton preSearchButton = new JButton("Search");
+        JButton preClearButton = new JButton("Clear");
+        preSearchPanel.add(preSearchLabel);
+        preSearchPanel.add(preSearchField);
+        preSearchPanel.add(preSearchButton);
+        preSearchPanel.add(preClearButton);
+
+        preSearchButton.addActionListener(e -> {
+            String searchText = preSearchField.getText().trim().toUpperCase();
+            if (searchText.isEmpty()) {
+                preSorter.setRowFilter(null);
+            } else {
+                preSorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText, 0));
+            }
+        });
+
+        preClearButton.addActionListener(e -> {
+            preSearchField.setText("");
+            preSorter.setRowFilter(null);
+        });
+
+        preAdvisingPanel.add(preSearchPanel, BorderLayout.NORTH);
         preAdvisingPanel.add(new JScrollPane(preAdvisingTable), BorderLayout.CENTER);
         JButton addButton = new JButton("Add Selected Courses");
         preAdvisingPanel.add(addButton, BorderLayout.SOUTH);
@@ -801,7 +839,8 @@ public class RDSMainGUI {
             int[] selectedRows = preAdvisingTable.getSelectedRows();
             List<String> selectedCourseCodes = new ArrayList<>();
             for (int row : selectedRows) {
-                selectedCourseCodes.add((String) preAdvisingTable.getValueAt(row, 0));
+                int modelRow = preAdvisingTable.convertRowIndexToModel(row);
+                selectedCourseCodes.add((String) preAdvisingModel.getValueAt(modelRow, 0));
             }
             if (advising.addPreAdvisedCourses(selectedCourseCodes)) {
                 JOptionPane.showMessageDialog(frame, "Added selected courses to pre-advising.");
@@ -812,6 +851,7 @@ public class RDSMainGUI {
             }
         });
         tabbedPane.addTab("Pre-Advising", preAdvisingPanel);
+
         // Advising Window Tab
         JPanel advisingWindowPanel = new JPanel(new BorderLayout());
         String[] advisingColumns = {"Code", "Title", "Section", "Time", "Day", "Faculty", "Credits"};
@@ -827,8 +867,45 @@ public class RDSMainGUI {
             advisingData[i][5] = section.getFacultyInitial();
             advisingData[i][6] = section.getCredit();
         }
-        JTable advisingTable = new JTable(advisingData, advisingColumns);
+        DefaultTableModel advisingModel = new DefaultTableModel(advisingData, advisingColumns);
+        JTable advisingTable = new JTable(advisingModel);
         advisingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        TableRowSorter<DefaultTableModel> advisingSorter = new TableRowSorter<>(advisingModel);
+        advisingTable.setRowSorter(advisingSorter);
+
+        // Add credit info label
+        JPanel advisingTopPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel creditInfoLabel = new JLabel("Advised Credits: " + advising.getAdvisedCredits() + "/15");
+        creditInfoLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        advisingTopPanel.add(creditInfoLabel);
+
+        // Add search panel for Advising Window
+        JPanel advisingSearchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel advisingSearchLabel = new JLabel("Search by Course Code:");
+        JTextField advisingSearchField = new JTextField(15);
+        JButton advisingSearchButton = new JButton("Search");
+        JButton advisingClearButton = new JButton("Clear");
+        advisingSearchPanel.add(advisingSearchLabel);
+        advisingSearchPanel.add(advisingSearchField);
+        advisingSearchPanel.add(advisingSearchButton);
+        advisingSearchPanel.add(advisingClearButton);
+
+        advisingSearchButton.addActionListener(e -> {
+            String searchText = advisingSearchField.getText().trim().toUpperCase();
+            if (searchText.isEmpty()) {
+                advisingSorter.setRowFilter(null);
+            } else {
+                advisingSorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText, 0));
+            }
+        });
+
+        advisingClearButton.addActionListener(e -> {
+            advisingSearchField.setText("");
+            advisingSorter.setRowFilter(null);
+        });
+
+        advisingWindowPanel.add(advisingTopPanel, BorderLayout.NORTH);
+        advisingWindowPanel.add(advisingSearchPanel, BorderLayout.NORTH);
         advisingWindowPanel.add(new JScrollPane(advisingTable), BorderLayout.CENTER);
         JPanel advisingButtonPanel = new JPanel();
         JButton adviseButton = new JButton("Advise Selected Section");
@@ -839,7 +916,15 @@ public class RDSMainGUI {
         adviseButton.addActionListener(e -> {
             int selectedRow = advisingTable.getSelectedRow();
             if (selectedRow >= 0) {
-                Course selectedSection = availableSections.get(selectedRow);
+                int modelRow = advisingTable.convertRowIndexToModel(selectedRow);
+                String code = (String) advisingModel.getValueAt(modelRow, 0);
+                String name = (String) advisingModel.getValueAt(modelRow, 1);
+                String section = (String) advisingModel.getValueAt(modelRow, 2);
+                String timeSlot = (String) advisingModel.getValueAt(modelRow, 3);
+                String time = (String) advisingModel.getValueAt(modelRow, 4);
+                String faculty = (String) advisingModel.getValueAt(modelRow, 5);
+                int credit = (int) advisingModel.getValueAt(modelRow, 6);
+                Course selectedSection = new Course(code, name, section, time, timeSlot, faculty, credit);
                 if (advising.adviseSection(selectedSection)) {
                     JOptionPane.showMessageDialog(frame, "Section " + selectedSection.getSection() + " for " + selectedSection.getCode() + " advised successfully!");
                     saveAdvisedCourses();
@@ -855,12 +940,14 @@ public class RDSMainGUI {
             showAdvisingWindow();
         });
         tabbedPane.addTab("Advising Window", advisingWindowPanel);
+
         // Advising Slip Tab
         JPanel slipPanel = new JPanel(new BorderLayout());
         JTextArea slipArea = new JTextArea(advising.getAdvisingSlip());
         slipArea.setEditable(false);
         slipPanel.add(new JScrollPane(slipArea), BorderLayout.CENTER);
         tabbedPane.addTab("Advising Slip", slipPanel);
+
         // View Pre-Advised Courses Tab
         JPanel managePanel = new JPanel(new BorderLayout());
         JPanel prePanel = new JPanel();
@@ -893,6 +980,7 @@ public class RDSMainGUI {
         }
         managePanel.add(new JScrollPane(prePanel), BorderLayout.CENTER);
         tabbedPane.addTab("View Pre-Advised", managePanel);
+
         frame.add(tabbedPane, BorderLayout.CENTER);
         JButton backButton = new JButton("Back");
         frame.add(backButton, BorderLayout.SOUTH);
@@ -1106,3 +1194,4 @@ public class RDSMainGUI {
         }
     }
 }
+
