@@ -1,11 +1,9 @@
 package rds;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-
 public class RDSMainGUI {
     private static List<Student> students = new ArrayList<>();
     private static List<Course> preAdvisedCourses = new ArrayList<>();
@@ -14,7 +12,6 @@ public class RDSMainGUI {
     private static final String STUDENT_FILE = "students.txt";
     private static final String ADVISED_COURSES_FILE = "advised_courses.txt";
     private static Student loggedInStudent = null;
-
     public static void main(String[] args) {
         loadStudents();
         loadAdvisedCourses();
@@ -23,7 +20,6 @@ public class RDSMainGUI {
         preAdvisedCourses = courseManager.getCourses();
         SwingUtilities.invokeLater(RDSMainGUI::showLoginWindow);
     }
-
     private static void loadStudents() {
         try (BufferedReader reader = new BufferedReader(new FileReader(STUDENT_FILE))) {
             String line;
@@ -44,7 +40,6 @@ public class RDSMainGUI {
             JOptionPane.showMessageDialog(null, "No existing student data found. Starting fresh.");
         }
     }
-
     private static void saveStudents() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(STUDENT_FILE))) {
             for (Student student : students) {
@@ -55,7 +50,6 @@ public class RDSMainGUI {
             JOptionPane.showMessageDialog(null, "Error saving student data.");
         }
     }
-
     private static void loadAdvisedCourses() {
         try (BufferedReader reader = new BufferedReader(new FileReader(ADVISED_COURSES_FILE))) {
             String line;
@@ -71,7 +65,6 @@ public class RDSMainGUI {
             JOptionPane.showMessageDialog(null, "No existing advised courses found. Starting fresh.");
         }
     }
-
     private static void saveAdvisedCourses() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ADVISED_COURSES_FILE))) {
             for (Map.Entry<String, List<Course>> entry : studentAdvisedCourses.entrySet()) {
@@ -85,11 +78,9 @@ public class RDSMainGUI {
             JOptionPane.showMessageDialog(null, "Error saving advised courses.");
         }
     }
-
     private static boolean validateEmail(String email) {
         return email.matches("^[\\w-\\.\\_]+@([\\w-]+\\.)+[\\w-]{2,4}$");
     }
-
     private static void showLoginWindow() {
         JFrame frame = new JFrame("RDS Login");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -140,23 +131,19 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showCreateAccountWindow() {
         JFrame frame = new JFrame("Create New Account");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(600, 700);
         frame.setLayout(new BorderLayout(10, 10));
-
         // Main panel with padding
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
         // Generated ID
         Random random = new Random();
         String id = String.format("%010d", random.nextInt(1000000000) + 1000000000);
         JLabel idLabel = new JLabel("Generated ID: " + id);
-
         // Account Information Panel
         JPanel accountPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         accountPanel.setBorder(BorderFactory.createTitledBorder("Account Information"));
@@ -170,7 +157,6 @@ public class RDSMainGUI {
         accountPanel.add(passwordField);
         accountPanel.add(degreeLabel);
         accountPanel.add(degreeField);
-
         // Personal Information Panel
         JPanel personalPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         personalPanel.setBorder(BorderFactory.createTitledBorder("Personal Information"));
@@ -194,7 +180,6 @@ public class RDSMainGUI {
         personalPanel.add(sexField);
         personalPanel.add(citizenshipLabel);
         personalPanel.add(citizenshipField);
-
         // Contact Information Panel
         JPanel contactPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         contactPanel.setBorder(BorderFactory.createTitledBorder("Contact Information"));
@@ -213,7 +198,6 @@ public class RDSMainGUI {
         contactPanel.add(cellPhoneField);
         contactPanel.add(mailingAddressLabel);
         contactPanel.add(mailingAddressField);
-
         // Parent/Guardian Information Panel
         JPanel parentPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         parentPanel.setBorder(BorderFactory.createTitledBorder("Parent/Guardian Information"));
@@ -237,7 +221,6 @@ public class RDSMainGUI {
         parentPanel.add(guardianNameField);
         parentPanel.add(phoneNumberLabel);
         parentPanel.add(phoneNumberField);
-
         // Optional Information Panel
         JPanel optionalPanel = new JPanel(new GridLayout(5, 2, 10, 10));
         optionalPanel.setBorder(BorderFactory.createTitledBorder("Optional Information"));
@@ -266,17 +249,14 @@ public class RDSMainGUI {
         optionalPanel.add(bloodGroupField);
         optionalPanel.add(parentAddressLabel);
         optionalPanel.add(parentAddressField);
-
         // Note about required fields
         JLabel noteLabel = new JLabel("* indicates required fields", SwingConstants.CENTER);
-
         // Button Panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
-
         // Add components to main panel
         mainPanel.add(idLabel);
         mainPanel.add(Box.createVerticalStrut(10));
@@ -291,11 +271,9 @@ public class RDSMainGUI {
         mainPanel.add(optionalPanel);
         mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(noteLabel);
-
         // Add main panel and button panel to frame
         frame.add(new JScrollPane(mainPanel), BorderLayout.CENTER);
         frame.add(buttonPanel, BorderLayout.SOUTH);
-
         saveButton.addActionListener(e -> {
             String password = new String(passwordField.getPassword());
             String name = nameField.getText();
@@ -339,16 +317,13 @@ public class RDSMainGUI {
             frame.dispose();
             showLoginWindow();
         });
-
         cancelButton.addActionListener(e -> {
             frame.dispose();
             showLoginWindow();
         });
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showForgotPasswordWindow() {
         JFrame frame = new JFrame("Forgot Password");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -416,31 +391,44 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showHomeWindow() {
         JFrame frame = new JFrame("RDS - Welcome, " + loggedInStudent.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(600, 600);
         frame.setLayout(new BorderLayout());
         JPanel topPanel = new JPanel(new GridLayout(3, 1));
         topPanel.add(new JLabel("Welcome, " + loggedInStudent.getName()));
         topPanel.add(new JLabel("ID: " + loggedInStudent.getId()));
         topPanel.add(new JLabel("Degree: " + loggedInStudent.getDegreeName()));
         frame.add(topPanel, BorderLayout.NORTH);
-        JPanel buttonPanel = new JPanel(new GridLayout(5, 3, 10, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         JButton profileButton = new JButton("Profile");
         JButton advisingButton = new JButton("Advising");
         JButton paymentsButton = new JButton("Payments");
         JButton courseDropButton = new JButton("Course Drop");
         JButton chatbotButton = new JButton("Chatbot");
+        JButton attendanceButton = new JButton("Attendance");
+        JButton facultyEvaluationButton = new JButton("Faculty Evaluation");
+        JButton gradesButton = new JButton("Grades");
+        JButton degreeButton = new JButton("Degree");
+        JButton servicesButton = new JButton("Services");
+        JButton smsHistoryButton = new JButton("SMS History");
+        JButton userGuidesButton = new JButton("User Guides");
         JButton logoutButton = new JButton("Logout");
         buttonPanel.add(profileButton);
         buttonPanel.add(advisingButton);
         buttonPanel.add(paymentsButton);
         buttonPanel.add(courseDropButton);
         buttonPanel.add(chatbotButton);
+        buttonPanel.add(attendanceButton);
+        buttonPanel.add(facultyEvaluationButton);
+        buttonPanel.add(gradesButton);
+        buttonPanel.add(degreeButton);
+        buttonPanel.add(servicesButton);
+        buttonPanel.add(smsHistoryButton);
+        buttonPanel.add(userGuidesButton);
         buttonPanel.add(logoutButton);
-        frame.add(buttonPanel, BorderLayout.CENTER);
+        frame.add(new JScrollPane(buttonPanel), BorderLayout.CENTER);
         profileButton.addActionListener(e -> {
             frame.dispose();
             showProfileWindow();
@@ -461,6 +449,34 @@ public class RDSMainGUI {
             frame.dispose();
             showChatbotWindow();
         });
+        attendanceButton.addActionListener(e -> {
+            frame.dispose();
+            showMockWindow("Attendance", "Mock Attendance Feature Coming Soon");
+        });
+        facultyEvaluationButton.addActionListener(e -> {
+            frame.dispose();
+            showMockWindow("Faculty Evaluation", "Mock Faculty Evaluation Feature Coming Soon");
+        });
+        gradesButton.addActionListener(e -> {
+            frame.dispose();
+            showGradesWindow();
+        });
+        degreeButton.addActionListener(e -> {
+            frame.dispose();
+            showMockWindow("Degree", "Mock Degree Feature Coming Soon");
+        });
+        servicesButton.addActionListener(e -> {
+            frame.dispose();
+            showMockWindow("Services", "Mock Services Feature Coming Soon");
+        });
+        smsHistoryButton.addActionListener(e -> {
+            frame.dispose();
+            showMockWindow("SMS History", "Mock SMS History Feature Coming Soon");
+        });
+        userGuidesButton.addActionListener(e -> {
+            frame.dispose();
+            showMockWindow("User Guides", "Mock User Guides Feature Coming Soon");
+        });
         logoutButton.addActionListener(e -> {
             loggedInStudent = null;
             frame.dispose();
@@ -469,7 +485,70 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+    private static void showMockWindow(String title, String message) {
+        JFrame frame = new JFrame(title);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(400, 200);
+        frame.setLayout(new BorderLayout());
+        JTextArea textArea = new JTextArea(message);
+        textArea.setEditable(false);
+        frame.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        JButton backButton = new JButton("Back");
+        frame.add(backButton, BorderLayout.SOUTH);
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            showHomeWindow();
+        });
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+    private static void showGradesWindow() {
+        JFrame frame = new JFrame("Grades");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(1000, 300);
+        frame.setLayout(new BorderLayout());
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Title
+        JLabel titleLabel = new JLabel("Grade History of " + loggedInStudent.getFirst7DigitsId());
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        mainPanel.add(titleLabel);
+        mainPanel.add(Box.createVerticalStrut(20));
+
+        // Transfer Courses Table Content
+        String[] transferColumns = {"Semester Name", "Semester Year", "Course Code", "Section", "Faculty Name", "Course Credit", "Course Title", "Course Grade"};
+        Object[][] transferData = {
+            {"Spring", "2025", "ENV107L", "26", "Dr. Abdus Samad Azad", "1.00", "Introduction to Environmental Science", "A"},
+            {"", "", "FIN440", "8", "Mr. Taskin Shakib", "3.00", "Corporate Finance", "A"},
+            {"", "", "FIN444", "4", "Mr. Tanvir Nabi Khan", "3.00", "International Financial Management", "A"},
+            {"", "", "PSY101", "2", "Dr. Akib Huque", "3.00", "Introduction to Psychology", "A"},
+            {"", "", "SOC101", "22", "Mr. Md. A. Sabur Sajal", "3.00", "Introduction to Sociology", "A"},
+            { "", "", "", "", "", "", "", "",},
+            {"Summer", "2024", "BUS135", "8", "Dr. Md Jahangir Alam", "3.00", "Applied Business Mathematics", "A"},
+            {"", "", "FIN410", "5", "Mr. Taskin Shakib", "3.00", "Financial Statement Analysis", "A"},
+            {"", "", "FIN433", "3", "Mr. Abdullah Al Mamun", "3.00", "Financial Markets and Institutions", "A-"},
+            {"", "", "HIS103", "40", "Dr. Atique Rahman", "3.00", "Emergence of Bangladesh", "A-"},
+            {"", "", "MIS207", "14", "Dr. Md. Mahbubul Alam", "3.00", "E-Business", "A"},
+            {"", "", "PBH101", "2", "Dr. Nadira Sultana Kakoly", "3.00", "Introduction to Public Health", "A"},
+            {"", "", "PBH101L", "14", "Shaouki Munir", "1.00", "Introduction to Public Health Lab", "A"}
+        };
+        JTable transferTable = new JTable(transferData, transferColumns);
+        transferTable.setFillsViewportHeight(true);
+        mainPanel.add(new JScrollPane(transferTable));
+
+        frame.add(new JScrollPane(mainPanel), BorderLayout.CENTER);
+        JButton backButton = new JButton("Back");
+        frame.add(backButton, BorderLayout.SOUTH);
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            showHomeWindow();
+        });
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
     private static void showProfileWindow() {
         JFrame frame = new JFrame("Profile");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -530,18 +609,15 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showEditProfileWindow() {
         JFrame frame = new JFrame("Edit Profile");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(600, 600);
         frame.setLayout(new BorderLayout(10, 10));
-
         // Main panel with padding
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
         // Contact Information Panel
         JPanel contactPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         contactPanel.setBorder(BorderFactory.createTitledBorder("Contact Information"));
@@ -560,7 +636,6 @@ public class RDSMainGUI {
         contactPanel.add(cellPhoneField);
         contactPanel.add(mailingAddressLabel);
         contactPanel.add(mailingAddressField);
-
         // Personal Information Panel
         JPanel personalPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         personalPanel.setBorder(BorderFactory.createTitledBorder("Personal Information"));
@@ -569,7 +644,6 @@ public class RDSMainGUI {
         nameField.setToolTipText("Enter your full name");
         personalPanel.add(nameLabel);
         personalPanel.add(nameField);
-
         // Optional Information Panel
         JPanel optionalPanel = new JPanel(new GridLayout(5, 2, 10, 10));
         optionalPanel.setBorder(BorderFactory.createTitledBorder("Optional Information"));
@@ -598,7 +672,6 @@ public class RDSMainGUI {
         optionalPanel.add(maritalStatusField);
         optionalPanel.add(bloodGroupLabel);
         optionalPanel.add(bloodGroupField);
-
         // Parent Address Panel
         JPanel parentAddressPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         parentAddressPanel.setBorder(BorderFactory.createTitledBorder("Parent Address"));
@@ -607,17 +680,14 @@ public class RDSMainGUI {
         parentAddressField.setToolTipText("Enter your parent or guardian's address (optional)");
         parentAddressPanel.add(parentAddressLabel);
         parentAddressPanel.add(parentAddressField);
-
         // Note about required fields
         JLabel noteLabel = new JLabel("All fields are optional; leave blank to keep current values", SwingConstants.CENTER);
-
         // Button Panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
-
         // Add components to main panel
         mainPanel.add(personalPanel);
         mainPanel.add(Box.createVerticalStrut(10));
@@ -628,11 +698,9 @@ public class RDSMainGUI {
         mainPanel.add(parentAddressPanel);
         mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(noteLabel);
-
         // Add main panel and button panel to frame
         frame.add(new JScrollPane(mainPanel), BorderLayout.CENTER);
         frame.add(buttonPanel, BorderLayout.SOUTH);
-
         saveButton.addActionListener(e -> {
             String email = emailField.getText();
             if (!email.isEmpty() && !validateEmail(email)) {
@@ -654,16 +722,13 @@ public class RDSMainGUI {
             frame.dispose();
             showProfileWindow();
         });
-
         cancelButton.addActionListener(e -> {
             frame.dispose();
             showProfileWindow();
         });
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showChangePasswordWindow() {
         JFrame frame = new JFrame("Change Password");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -710,7 +775,6 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showAdvisingWindow() {
         JFrame frame = new JFrame("Advising");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -718,7 +782,6 @@ public class RDSMainGUI {
         frame.setLayout(new BorderLayout());
         Advising advising = new Advising(loggedInStudent, preAdvisedCourses, studentAdvisedCourses, studentPreAdvisedCourseCodes);
         JTabbedPane tabbedPane = new JTabbedPane();
-
         // Pre-Advising Tab
         JPanel preAdvisingPanel = new JPanel(new BorderLayout());
         String[] preAdvisingColumns = {"Code", "Title"};
@@ -749,7 +812,6 @@ public class RDSMainGUI {
             }
         });
         tabbedPane.addTab("Pre-Advising", preAdvisingPanel);
-
         // Advising Window Tab
         JPanel advisingWindowPanel = new JPanel(new BorderLayout());
         String[] advisingColumns = {"Code", "Title", "Section", "Time", "Day", "Faculty", "Credits"};
@@ -793,14 +855,12 @@ public class RDSMainGUI {
             showAdvisingWindow();
         });
         tabbedPane.addTab("Advising Window", advisingWindowPanel);
-
         // Advising Slip Tab
         JPanel slipPanel = new JPanel(new BorderLayout());
         JTextArea slipArea = new JTextArea(advising.getAdvisingSlip());
         slipArea.setEditable(false);
         slipPanel.add(new JScrollPane(slipArea), BorderLayout.CENTER);
         tabbedPane.addTab("Advising Slip", slipPanel);
-
         // View Pre-Advised Courses Tab
         JPanel managePanel = new JPanel(new BorderLayout());
         JPanel prePanel = new JPanel();
@@ -833,7 +893,6 @@ public class RDSMainGUI {
         }
         managePanel.add(new JScrollPane(prePanel), BorderLayout.CENTER);
         tabbedPane.addTab("View Pre-Advised", managePanel);
-
         frame.add(tabbedPane, BorderLayout.CENTER);
         JButton backButton = new JButton("Back");
         frame.add(backButton, BorderLayout.SOUTH);
@@ -844,13 +903,11 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showCourseDropWindow() {
         JFrame frame = new JFrame("Course Drop");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(800, 400);
         frame.setLayout(new BorderLayout());
-
         Advising advising = new Advising(loggedInStudent, preAdvisedCourses, studentAdvisedCourses, studentPreAdvisedCourseCodes);
         String[] columns = {"Code", "Title", "Section", "Time", "Day", "Faculty", "Credits", "Drop"};
         List<Course> advisedCourses = advising.getAdvisedCourses();
@@ -876,18 +933,15 @@ public class RDSMainGUI {
         table.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor(table, new JCheckBox(), advising, frame));
         table.getColumnModel().getColumn(7).setPreferredWidth(50);
         frame.add(new JScrollPane(table), BorderLayout.CENTER);
-
         JButton backButton = new JButton("Back");
         frame.add(backButton, BorderLayout.SOUTH);
         backButton.addActionListener(e -> {
             frame.dispose();
             showHomeWindow();
         });
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
     private static void showPaymentsWindow() {
         JFrame frame = new JFrame("Payments");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -911,8 +965,6 @@ public class RDSMainGUI {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
-
     private static void showChatbotWindow() {
         JFrame frame = new JFrame("RDS Chatbot");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -925,7 +977,7 @@ public class RDSMainGUI {
         chatArea.append("- 'grade <score>' to calculate grade for a score (e.g., 'grade 85')\n");
         chatArea.append("- 'prereq <course code>' to check prerequisites (e.g., 'prereq MIS207')\n");
         chatArea.append("- 'addcourse <course code> <credits> <grade>' to add a course (e.g., 'addcourse CS101 3.0 A')\n");
-        chatArea.append("  Valid grades: A, A-, B+, B, B-, C+, C, C-, D+, D, F, I (Incomplete), W (Withdrawal)\n");
+        chatArea.append(" Valid grades: A, A-, B+, B, B-, C+, C, C-, D+, D, F, I (Incomplete), W (Withdrawal)\n");
         chatArea.append("- 'calculate' to compute GPA for added courses\n");
         chatArea.append("- 'listcourses' to view added courses\n");
         chatArea.append("- 'clearcourses' to clear added courses\n");
@@ -993,13 +1045,11 @@ public class RDSMainGUI {
             setText("X");
             setForeground(Color.RED);
         }
-
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             return this;
         }
     }
-
     // Custom editor for the drop button
     static class ButtonEditor extends DefaultCellEditor {
         private JButton button;
@@ -1008,7 +1058,6 @@ public class RDSMainGUI {
         private JFrame frame;
         private JTable table;
         private boolean isPushed;
-
         public ButtonEditor(JTable table, JCheckBox checkBox, Advising advising, JFrame frame) {
             super(checkBox);
             this.table = table;
@@ -1019,14 +1068,12 @@ public class RDSMainGUI {
             button.setForeground(Color.RED);
             button.addActionListener(e -> fireEditingStopped());
         }
-
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             code = (String) table.getValueAt(row, 0);
             isPushed = true;
             return button;
         }
-
         @Override
         public Object getCellEditorValue() {
             if (isPushed) {
@@ -1048,13 +1095,11 @@ public class RDSMainGUI {
             isPushed = false;
             return "";
         }
-
         @Override
         public boolean stopCellEditing() {
             isPushed = false;
             return super.stopCellEditing();
         }
-
         @Override
         protected void fireEditingStopped() {
             super.fireEditingStopped();
