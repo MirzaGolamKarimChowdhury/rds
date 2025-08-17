@@ -1,32 +1,51 @@
 package rds;
 
-import javax.swing.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Chatbot {
-    private static final Map<Integer, String[]> gradeMap = new HashMap<>();
+
+    private static final Map<String, Double> letterGradeToPoints = new HashMap<>(); // New map for letter grade to grade points
+    private static final Map<String, String> coursePrerequisites = new HashMap<>();
+    private final List<CourseGrade> courseGrades = new ArrayList<>(); // Store courses for GPA calculation
+
     
-    static {
-        // Initialize grading system: {minScore, letterGrade, gradePoint}
-        gradeMap.put(93, new String[]{"A", "4.0"});
-        gradeMap.put(90, new String[]{"A-", "3.7"});
-        gradeMap.put(87, new String[]{"B+", "3.3"});
-        gradeMap.put(83, new String[]{"B", "3.0"});
-        gradeMap.put(80, new String[]{"B-", "2.7"});
-        gradeMap.put(77, new String[]{"C+", "2.3"});
-        gradeMap.put(73, new String[]{"C", "2.0"});
-        gradeMap.put(70, new String[]{"C-", "1.7"});
-        gradeMap.put(67, new String[]{"D+", "1.3"});
-        gradeMap.put(60, new String[]{"D", "1.0"});
-        gradeMap.put(0, new String[]{"F", "0.0"});
+    private static class CourseGrade {
+        String courseCode;
+        double credits;
+        String letterGrade;
+        double gradePoint;
+
+        CourseGrade(String courseCode, double credits, String letterGrade, double gradePoint) {
+            this.courseCode = courseCode;
+            this.credits = credits;
+            this.letterGrade = letterGrade;
+            this.gradePoint = gradePoint;
+        }
     }
 
-    // Placeholder for course prerequisites (to be updated when provided)
-    private static final Map<String, String> coursePrerequisites = new HashMap<>();
-    
     static {
-        // Mock prerequisites until actual data is provided
+       
+
+        // Initialize letter grade to grade points mapping
+        letterGradeToPoints.put("A", 4.0);
+        letterGradeToPoints.put("A-", 3.7);
+        letterGradeToPoints.put("B+", 3.3);
+        letterGradeToPoints.put("B", 3.0);
+        letterGradeToPoints.put("B-", 2.7);
+        letterGradeToPoints.put("C+", 2.3);
+        letterGradeToPoints.put("C", 2.0);
+        letterGradeToPoints.put("C-", 1.7);
+        letterGradeToPoints.put("D+", 1.3);
+        letterGradeToPoints.put("D", 1.0);
+        letterGradeToPoints.put("F", 0.0);
+        letterGradeToPoints.put("I", 0.0); // Incomplete
+        letterGradeToPoints.put("W", 0.0); // Withdrawal
+
+        
         coursePrerequisites.put("ECO101", "NONE");
         coursePrerequisites.put("ECO104", "ECO101");
         coursePrerequisites.put("MIS107", "NONE");
@@ -147,28 +166,7 @@ public class Chatbot {
         coursePrerequisites.put("ECO348", "ECO101 & ECO104");
         coursePrerequisites.put("ECO372", "BUS173");
         coursePrerequisites.put("ECO472", "ECO372");
-
-
         
-      
-    }
-
-    public String calculateGrade(String scoreInput) {
-        try {
-            int score = Integer.parseInt(scoreInput.trim());
-            if (score < 0 || score > 100) {
-                return "Invalid score. Please enter a number between 0 and 100.";
-            }
-            for (int threshold : gradeMap.keySet().toArray(new Integer[0])) {
-                if (score >= threshold) {
-                    String[] gradeInfo = gradeMap.get(threshold);
-                    return "Score: " + score + "\nLetter Grade: " + gradeInfo[0] + "\nGrade Point: " + gradeInfo[1];
-                }
-            }
-        } catch (NumberFormatException e) {
-            return "Invalid input. Please enter a numeric score.";
-        }
-        return "Error calculating grade.";
     }
 
     public String getPrerequisites(String courseCode) {
@@ -176,5 +174,76 @@ public class Chatbot {
         String prereq = coursePrerequisites.getOrDefault(courseCode, "Prerequisite information not available.");
         return "Course: " + courseCode + "\nPrerequisites: " + prereq;
     }
+
+    // Add a course with credits and letter grade
+    public String addCourse(String courseCode, String credits, String letterGrade) {
+        try {
+            double creditValue = Double.parseDouble(credits.trim());
+            if (creditValue <= 0) {
+                return "Invalid credits. Please enter a positive number.";
+            }
+            letterGrade = letterGrade.trim().toUpperCase();
+            if (!letterGradeToPoints.containsKey(letterGrade)) {
+                return "Invalid letter grade. Valid grades are: A, A-, B+, B, B-, C+, C, C-, D+, D, F, I, W.";
+            }
+         
+            courseCode = courseCode.trim().toUpperCase();
+           
+            double gradePoint = letterGradeToPoints.get(letterGrade);
+            courseGrades.add(new CourseGrade(courseCode, creditValue, letterGrade, gradePoint));
+            return "Added course: " + courseCode + " (" + credits + " credits, Grade: " + letterGrade + ")";
+        } catch (NumberFormatException e) {
+            return "Invalid credits format. Please enter a numeric value for credits.";
+        }
+    }
+
+    // Calculate GPA based on added courses
+    public String calculateGPA() {
+        if (courseGrades.isEmpty()) {
+            return "No courses added. Please add courses using 'addcourse <course code> <credits> <grade>'.";
+        }
+        double totalGradePoints = 0.0;
+        double totalCredits = 0.0;
+        StringBuilder summary = new StringBuilder("GPA Calculation:\n");
+        summary.append("----------------------------------------\n");
+        summary.append(String.format("%-15s %-10s %-10s %-10s\n", "Course", "Credits", "Grade", "Grade Points"));
+        summary.append("----------------------------------------\n");
+
+        for (CourseGrade course : courseGrades) {
+            double courseGradePoints = course.credits * course.gradePoint;
+            totalGradePoints += courseGradePoints;
+            totalCredits += course.credits;
+            summary.append(String.format("%-15s %-10.2f %-10s %-10.2f\n",
+                    course.courseCode, course.credits, course.letterGrade, courseGradePoints));
+        }
+
+        double gpa = totalCredits > 0 ? totalGradePoints / totalCredits : 0.0;
+        summary.append("----------------------------------------\n");
+        summary.append(String.format("Total Credits: %.2f\n", totalCredits));
+        summary.append(String.format("GPA: %.2f\n", gpa));
+        return summary.toString();
+    }
+
+    // Clear all added courses
+    public void clearCourses() {
+        courseGrades.clear();
+    }
+
+    // List all added courses
+    public String listCourses() {
+        if (courseGrades.isEmpty()) {
+            return "No courses added.";
+        }
+        StringBuilder summary = new StringBuilder("Added Courses:\n");
+        summary.append("----------------------------------------\n");
+        summary.append(String.format("%-15s %-10s %-10s\n", "Course", "Credits", "Grade"));
+        summary.append("----------------------------------------\n");
+        for (CourseGrade course : courseGrades) {
+            summary.append(String.format("%-15s %-10.2f %-10s\n",
+                    course.courseCode, course.credits, course.letterGrade));
+        }
+        return summary.toString();
+    }
 }
+
 
